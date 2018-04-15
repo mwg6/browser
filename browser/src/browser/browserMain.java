@@ -3,13 +3,13 @@ package browser;
 import javax.swing.JFrame;
 
 public class browserMain {
-	   private static void createAndShowUI(){
+	 static JFrame display = new JFrame("Max's Browser");
+	   
+	
+	   static adressBar bar = new adressBar();
+	
+	private static void createAndShowUI(){
 		   
-		   JFrame display = new JFrame("Max's Browser");
-		   
-		   browserPage main = new browserPage();
-		   adressBar bar = new adressBar();
-		   display.add(main);
 		   display.add(bar);
 		   display.pack();
 		   display.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -21,6 +21,7 @@ public class browserMain {
 		      java.awt.EventQueue.invokeLater(new Runnable() {
 		         public void run() {
 		            createAndShowUI();
+		            
 		         }
 		      });
 		   
