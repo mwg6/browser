@@ -6,7 +6,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -49,14 +53,38 @@ public class adressBar extends JPanel {
 			  public void actionPerformed(ActionEvent e) { 
 			   System.out.println(adress.getText());
 			   try {
-				pageDisplay.setPage(adress.getText());
+				pageDisplay.setPage(validateAndRedirect(adress.getText()));
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			  } 
 			} );
-		go.addKeyListener(l);
+		go.addKeyListener(new KeyListener(){
+			@Override
+			public void keyPressed(KeyEvent e){
+				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+					try {
+						pageDisplay.setPage(adress.getText());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					};
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		pageDisplay.addHyperlinkListener(new HyperlinkListener(){
 			@Override
 			public void hyperlinkUpdate(HyperlinkEvent event){
@@ -84,6 +112,39 @@ public class adressBar extends JPanel {
 	
 	public String getWebsite(){
 		return adress.getText();
+	}
+	public static String validateAndRedirect(String text){
+		
+		try {
+			URL obj = new URL(text);
+			HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+			conn.setReadTimeout(5000);
+			
+			System.out.println("Requested URL: " + text);
+			
+			boolean redirect = false;
+			int status = conn.getResponseCode();
+			//if(status = HttpURLConnection.HTTP_ACCEPTED){
+				
+			if(status != HttpURLConnection.HTTP_OK||status == HttpURLConnection.HTTP_MOVED_TEMP||status == HttpURLConnection.HTTP_MOVED_PERM||status == HttpURLConnection.HTTP_SEE_OTHER){
+				System.out.println("Redirected!");
+				redirect = true;
+			}
+			System.out.println("Webpage status: " + status);
+			
+			if(redirect){
+				text = conn.getHeaderField("Location");
+				
+				
+			}
+		
+		} 
+		
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return text;
 	}
 	
 }
