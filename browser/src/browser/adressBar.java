@@ -28,24 +28,20 @@ public class adressBar extends JPanel {
 	
 	JButton go = new JButton("GO!");
 	
+	JButton back = new JButton("<-");
+	
+	JButton forward = new JButton("->");
+	
 	String a = "https://www.google.com";
 	
 	JEditorPane pageDisplay = new JEditorPane("text/html", a);
 	
 	JScrollPane b = new JScrollPane(pageDisplay);
-	/*	
-	public void setDisplay(String string){
-		
-		try {
-			URL a = new URL(string);
-			System.out.println(string);
-			pageDisplay.setPage(a);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("failed");
-		}
-	}
-	*/
+	
+	int historyPlace = 0;
+	
+	String[] history = new String[20];
+
 	public adressBar(){
 		
 		go.addActionListener(new ActionListener()
@@ -53,10 +49,69 @@ public class adressBar extends JPanel {
 			  public void actionPerformed(ActionEvent e) { 
 			   System.out.println(adress.getText());
 			   try {
+				
 				pageDisplay.setPage(validateAndRedirect(adress.getText()));
+				//adds the current page to the history
+				history[historyPlace] = validateAndRedirect(adress.getText());
+				//tries to handle reaching the end of the history memory
+				if(historyPlace == 19){
+					historyPlace = 0;
+				}
+				else{
+				historyPlace++;
+				}
+				
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+			}
+			  } 
+			} );
+		back.addActionListener(new ActionListener()
+		{ 
+			  public void actionPerformed(ActionEvent e) { 
+			   System.out.println(adress.getText());
+			   try {
+				   if(historyPlace==0){
+					   
+				   }
+				   else{
+				   historyPlace--;
+				   pageDisplay.setPage(history[historyPlace]);
+				   adress.setText(history[historyPlace]);
+				   }
+				
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				System.out.println(historyPlace);
+			}
+			  } 
+			} );
+		forward.addActionListener(new ActionListener()
+		{ 
+			  public void actionPerformed(ActionEvent e) { 
+			   System.out.println(adress.getText());
+			   try {
+				 //handles case when no forward 
+				   if (history[historyPlace+1].isEmpty()&&historyPlace<=18){
+					   
+				   }
+				   //handles full history looping
+				   else if(historyPlace == 19){
+					   historyPlace = 0;
+					   pageDisplay.setPage(history[historyPlace]);
+					   adress.setText(history[historyPlace]);
+				   }
+				   //handles normal function
+				   else{
+					   historyPlace++;
+					   pageDisplay.setPage(history[historyPlace]);
+					   adress.setText(history[historyPlace]);
+				   }
+				
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				System.out.println(historyPlace);
 			}
 			  } 
 			} );
@@ -103,6 +158,8 @@ public class adressBar extends JPanel {
 
 		
 		});
+		add(back, BorderLayout.NORTH);
+		add(forward, BorderLayout.NORTH);
 		add(adress, BorderLayout.NORTH);
 		add(go, BorderLayout.NORTH);
 		b.setPreferredSize(new Dimension(400,400));
@@ -113,6 +170,7 @@ public class adressBar extends JPanel {
 	public String getWebsite(){
 		return adress.getText();
 	}
+	//the below will redirect websites. This will be useful if http is typed but https is required
 	public static String validateAndRedirect(String text){
 		
 		try {
