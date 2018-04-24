@@ -32,10 +32,12 @@ public class adressBar extends JPanel {
 	
 	JButton forward = new JButton("->");
 	
-	String a = "https://www.google.com";
+	String homepage = "https://www.google.com";
 	
-	JEditorPane pageDisplay = new JEditorPane("text/html", a);
 	
+	JEditorPane pageDisplay = new JEditorPane("text/html", null);
+	
+		
 	JScrollPane b = new JScrollPane(pageDisplay);
 	
 	int historyPlace = 0;
@@ -52,14 +54,9 @@ public class adressBar extends JPanel {
 				
 				pageDisplay.setPage(validateAndRedirect(adress.getText()));
 				//adds the current page to the history
-				history[historyPlace] = validateAndRedirect(adress.getText());
+				history[historyPlace] = adress.getText();
 				//tries to handle reaching the end of the history memory
-				if(historyPlace == 19){
-					historyPlace = 0;
-				}
-				else{
 				historyPlace++;
-				}
 				
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
@@ -69,19 +66,20 @@ public class adressBar extends JPanel {
 			} );
 		back.addActionListener(new ActionListener()
 		{ 
-			  public void actionPerformed(ActionEvent e) { 
+			  public void actionPerformed(ActionEvent k) { 
 			   System.out.println(adress.getText());
 			   try {
 				   if(historyPlace==0){
 					   
 				   }
 				   else{
+				   history[historyPlace] = adress.getText();
 				   historyPlace--;
 				   pageDisplay.setPage(history[historyPlace]);
 				   adress.setText(history[historyPlace]);
 				   }
 				
-			} catch (IOException e1) {
+			} catch (IOException k1) {
 				// TODO Auto-generated catch block
 				System.out.println(historyPlace);
 			}
@@ -89,38 +87,30 @@ public class adressBar extends JPanel {
 			} );
 		forward.addActionListener(new ActionListener()
 		{ 
-			  public void actionPerformed(ActionEvent e) { 
-			   System.out.println(adress.getText());
-			   try {
-				 //handles case when no forward 
-				   if (history[historyPlace+1].isEmpty()&&historyPlace<=18){
-					   
-				   }
-				   //handles full history looping
-				   else if(historyPlace == 19){
-					   historyPlace = 0;
-					   pageDisplay.setPage(history[historyPlace]);
-					   adress.setText(history[historyPlace]);
-				   }
-				   //handles normal function
-				   else{
-					   historyPlace++;
-					   pageDisplay.setPage(history[historyPlace]);
-					   adress.setText(history[historyPlace]);
-				   }
-				
-			} catch (IOException e1) {
+			  public void actionPerformed(ActionEvent j) { 
+			  try{
+				  historyPlace++;
+				  pageDisplay.setPage(history[historyPlace]);
+				  adress.setText(history[historyPlace]);
+				  
+			} catch (IOException j1) {
 				// TODO Auto-generated catch block
-				System.out.println(historyPlace);
+				System.out.println("fail");
+				for(int x = 0; x<=historyPlace;x++){
+					
+				
+				System.out.println(history[historyPlace]);
+				}
 			}
 			  } 
 			} );
-		go.addKeyListener(new KeyListener(){
+		adress.addKeyListener(new KeyListener(){
 			@Override
 			public void keyPressed(KeyEvent e){
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
 					try {
 						pageDisplay.setPage(adress.getText());
+						System.out.println("Success");
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -174,6 +164,21 @@ public class adressBar extends JPanel {
 	public static String validateAndRedirect(String text){
 		
 		try {
+			System.out.println(text);
+			//checks for confirmation to url standards and forces compliance
+			if(text.substring(text.length()-4)!=".com"){
+				System.out.println(text.substring(text.length()-4));
+				text = text+".com";
+				System.out.println("fail .com");
+				
+			}
+			else{}
+			if(text.substring(0,11)!="https://www."||text.length()<11)
+			{
+				text = "https://www."+text;
+				System.out.println("fail http");
+			}
+			else{}
 			URL obj = new URL(text);
 			HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
 			conn.setReadTimeout(5000);
