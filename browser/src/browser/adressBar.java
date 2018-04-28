@@ -26,6 +26,10 @@ public class adressBar extends JPanel {
 	
 	JTextField adress = new JTextField(100);
 	
+	JTextField searchBar = new JTextField(35);
+	
+	JButton search = new JButton("Search!");
+	
 	JButton go = new JButton("GO!");
 	
 	JButton back = new JButton("<-");
@@ -53,6 +57,26 @@ public class adressBar extends JPanel {
 			   try {
 				
 				pageDisplay.setPage(validateAndRedirect(adress.getText()));
+				adress.setText(validateAndRedirect(adress.getText()));
+				//adds the current page to the history
+				history[historyPlace] = adress.getText();
+				//tries to handle reaching the end of the history memory
+				historyPlace++;
+				
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			  } 
+			} );
+		search.addActionListener(new ActionListener()
+		{ 
+			  public void actionPerformed(ActionEvent e) { 
+			   System.out.println(searchBar.getText());
+			   try {
+				
+				pageDisplay.setPage(validateAndRedirect("https://duckduckgo.com/?q="+searchBar.getText()+"&t=hh&ia=web"));
+				adress.setText("https://duckduckgo.com/?q="+searchBar.getText()+"&t=hh&ia=web");
 				//adds the current page to the history
 				history[historyPlace] = adress.getText();
 				//tries to handle reaching the end of the history memory
@@ -152,6 +176,8 @@ public class adressBar extends JPanel {
 		add(forward, BorderLayout.NORTH);
 		add(adress, BorderLayout.NORTH);
 		add(go, BorderLayout.NORTH);
+		add(search, BorderLayout.NORTH);
+		add(searchBar, BorderLayout.NORTH);
 		b.setPreferredSize(new Dimension(400,400));
 		pageDisplay.setEditable(false);
 		add(b, BorderLayout.SOUTH);
@@ -166,19 +192,7 @@ public class adressBar extends JPanel {
 		try {
 			System.out.println(text);
 			//checks for confirmation to url standards and forces compliance
-			if(text.substring(text.length()-4)!=".com"){
-				System.out.println(text.substring(text.length()-4));
-				text = text+".com";
-				System.out.println("fail .com");
-				
-			}
-			else{}
-			if(text.substring(0,11)!="https://www."||text.length()<11)
-			{
-				text = "https://www."+text;
-				System.out.println("fail http");
-			}
-			else{}
+			
 			URL obj = new URL(text);
 			HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
 			conn.setReadTimeout(5000);
